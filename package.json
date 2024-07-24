@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon  src/index.js",
-    "start": "node server.js"
+    "start": "node src/server.js"
   },
   "keywords": [],
   "author": "Dmytro Manko <dmv1573@gmail.com>",
