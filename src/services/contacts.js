@@ -17,3 +17,25 @@ export const getContactById = async (contactId) => {
     console.error(error);
   }
 };
+
+export function createContact(contact) {
+  return contactsCollection.create(contact);
+}
+
+export function deleteContact(contactId) {
+  return contactsCollection.findByIdAndDelete(contactId);
+}
+
+export function updateContact(contactId, contact) {
+  return contactsCollection.findByIdAndUpdate(contactId, contact, {
+    new: true,
+  });
+}
+
+export function changeContactEmail(contactId, email) {
+  return contactsCollection.findByIdAndUpdate(
+    contactId,
+    { email: email },
+    { new: true },
+  );
+}
