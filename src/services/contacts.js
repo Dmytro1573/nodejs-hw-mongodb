@@ -32,10 +32,6 @@ export function updateContact(contactId, contact) {
   });
 }
 
-export function changeContactEmail(contactId, email) {
-  return contactsCollection.findByIdAndUpdate(
-    contactId,
-    { email: email },
-    { new: true },
-  );
+export function changeContactEmail(contactId, contact) {
+  return contactsCollection.findByIdAndUpdate(contactId, contact);
 }
