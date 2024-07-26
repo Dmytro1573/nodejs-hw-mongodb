@@ -27,7 +27,7 @@ router.put(
 );
 
 router.patch(
-  '/contacts/:contactId/email',
+  '/contacts/:contactId',
   jsonParser,
   ctrlWrapper(changeEmailController),
 );

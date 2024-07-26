@@ -78,18 +78,18 @@ async function updateContactController(req, res, next) {
 
 async function changeEmailController(req, res, next) {
   const contactId = req.params.contactId;
-  const email = req.body.email;
+  const contact = {
+    name: req.body.name,
+    phoneNumber: req.body.phoneNumber,
+    email: req.body.email,
+  };
 
-  const changedEmail = await changeContactEmail(contactId, email);
-
-  if (!changedEmail) {
-    throw createHttpError(404, 'Contact not found');
-  }
+  const changedContact = await changeContactEmail(contactId, contact);
 
   res.status(200).send({
     status: 200,
     message: 'Successfully patched a contact!',
-    data: changedEmail,
+    data: changedContact,
   });
 }
 
