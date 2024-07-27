@@ -86,6 +86,10 @@ async function changeEmailController(req, res, next) {
 
   const changedContact = await changeContactEmail(contactId, contact);
 
+  if (!changedContact) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
+
   res.status(200).send({
     status: 200,
     message: 'Successfully patched a contact!',
