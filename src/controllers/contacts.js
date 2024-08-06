@@ -7,9 +7,24 @@ import {
   changeContactEmail,
 } from '../services/contacts.js';
 import createHttpError from 'http-errors';
+import { contactSchema } from '../validations/contacts.js';
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 async function getAllContactsController(req, res, next) {
-  const contacts = await getAllContacts();
+  const { page, perPage } = parsePaginationParams(req.query);
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  const filter = parseFilterParams(req.query);
+
+  const contacts = await getAllContacts({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+    filter,
+  });
+
   res.status(200).json({
     status: 200,
     message: 'Contacts found',
@@ -19,6 +34,7 @@ async function getAllContactsController(req, res, next) {
 
 async function getContactByIdController(req, res, next) {
   const { contactId } = req.params;
+
   const contact = await getContactById(contactId);
 
   if (!contact) {
@@ -39,7 +55,15 @@ async function createContactController(req, res, next) {
     email: req.body.email,
   };
 
-  const createdContact = await createContact(contact);
+  const { error, value } = contactSchema.validate(contact);
+
+  console.log(error);
+
+  if (error !== undefined) {
+    return next(createHttpError(400, error.details[0].message));
+  }
+
+  const createdContact = await createContact(value);
 
   res.status(201).send({
     status: 201,
