@@ -10,7 +10,7 @@ export const getAllContacts = async ({
   const limit = perPage;
   const skip = page > 0 ? (page - 1) * perPage : 0;
 
-  const [contacts, count] = await Promise.all([
+  const [data, count] = await Promise.all([
     contactsCollection
       .find(filter)
       .sort({ [sortBy]: sortOrder })
@@ -23,7 +23,7 @@ export const getAllContacts = async ({
   const totalPages = Math.ceil(count / perPage);
 
   return {
-    contacts,
+    data,
     page,
     perPage,
     totalItems: count,
@@ -52,5 +52,7 @@ export function updateContact(contactId, contact) {
 }
 
 export function changeContactEmail(contactId, contact) {
-  return contactsCollection.findByIdAndUpdate(contactId, contact);
+  return contactsCollection.findByIdAndUpdate(contactId, contact, {
+    new: true,
+  });
 }

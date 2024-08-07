@@ -47,6 +47,7 @@ router.patch(
   '/contacts/:contactId',
   isValidID,
   jsonParser,
+  validateBody(contactSchema),
   ctrlWrapper(changeEmailController),
 );
 
