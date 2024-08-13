@@ -13,9 +13,10 @@ import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
 
 async function getAllContactsController(req, res, next) {
+  console.log(req.user);
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
-  const filter = parseFilterParams(req.query);
+  const filter = { ...parseFilterParams(req.query), userId: req.user._id };
 
   const contacts = await getAllContacts({
     page,
@@ -37,6 +38,10 @@ async function getContactByIdController(req, res, next) {
 
   const contact = await getContactById(contactId);
 
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
+
   if (!contact) {
     return next(createHttpError(404, 'Contact not found'));
   }
@@ -53,6 +58,7 @@ async function createContactController(req, res, next) {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
+    userId: req.user._id,
   };
 
   const { error, value } = contactSchema.validate(contact);
@@ -77,6 +83,10 @@ async function deleteContactController(req, res, next) {
 
   const deletedContact = await deleteContact(contactId);
 
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
+
   if (deletedContact === null) {
     return next(createHttpError(404, 'Contact not found'));
   }
@@ -92,6 +102,10 @@ async function updateContactController(req, res, next) {
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
   };
+
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
 
   const updatedContact = await updateContact(contactId, contact);
 
@@ -110,11 +124,13 @@ async function changeEmailController(req, res, next) {
 
   const changedContact = await changeContactEmail(contactId, contact);
 
-  if (!changedContact) {
+  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     return next(createHttpError(404, 'Contact not found'));
   }
 
-
+  if (!changedContact) {
+    return next(createHttpError(404, 'Contact not found'));
+  }
 
   res.status(200).send({
     status: 200,
