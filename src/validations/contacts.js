@@ -10,4 +10,5 @@ export const contactSchema = Joi.object({
   email: Joi.string().min(3).max(20).email().required(),
   isFavourite: Joi.boolean(),
   contactType: Joi.string().valid('work', 'home', 'personal'),
+  userId: Joi.optional(),
 });
