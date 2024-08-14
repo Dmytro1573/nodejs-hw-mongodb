@@ -35,8 +35,9 @@ async function getAllContactsController(req, res, next) {
 
 async function getContactByIdController(req, res, next) {
   const { contactId } = req.params;
+  const userId = req.user._id;
 
-  const contact = await getContactById(contactId);
+  const contact = await getContactById(contactId, userId);
 
   if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     return next(createHttpError(404, 'Contact not found'));
@@ -80,8 +81,9 @@ async function createContactController(req, res, next) {
 
 async function deleteContactController(req, res, next) {
   const contactId = req.params.contactId;
+  const userId = req.user._id;
 
-  const deletedContact = await deleteContact(contactId);
+  const deletedContact = await deleteContact(contactId, userId);
 
   if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     return next(createHttpError(404, 'Contact not found'));
@@ -96,6 +98,7 @@ async function deleteContactController(req, res, next) {
 
 async function updateContactController(req, res, next) {
   const contactId = req.params.contactId;
+  const userId = req.user._id;
 
   const contact = {
     name: req.body.name,
@@ -107,7 +110,7 @@ async function updateContactController(req, res, next) {
     return next(createHttpError(404, 'Contact not found'));
   }
 
-  const updatedContact = await updateContact(contactId, contact);
+  const updatedContact = await updateContact(contactId, contact, userId);
 
   res
     .status(200)
@@ -121,8 +124,9 @@ async function changeEmailController(req, res, next) {
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
   };
+  const userId = req.user._id;
 
-  const changedContact = await changeContactEmail(contactId, contact);
+  const changedContact = await changeContactEmail(contactId, contact, userId);
 
   if (!contact || contact.userId.toString() !== req.user._id.toString()) {
     return next(createHttpError(404, 'Contact not found'));
