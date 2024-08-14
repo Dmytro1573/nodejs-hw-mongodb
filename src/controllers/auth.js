@@ -14,7 +14,7 @@ export async function register(req, res, next) {
 
   const createdUser = await registerUser(user);
 
-  res.send({
+  res.status(201).send({
     status: 201,
     message: 'Successfully registered a user!',
     data: createdUser,
@@ -39,7 +39,9 @@ export async function login(req, res, next) {
   res.send({
     status: 200,
     message: 'Successfully logged in an user!',
-    data: session.accessToken,
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 }
 
@@ -73,6 +75,8 @@ export async function refresh(req, res, next) {
   res.send({
     status: 200,
     message: 'Successfully refreshed a session!',
-    data: session.accessToken,
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 }

@@ -33,26 +33,34 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (contactId) => {
-  return await contactsCollection.findById(contactId);
+export const getContactById = async (contactId, userId) => {
+  return await contactsCollection.findById({ _id: contactId, userId });
 };
 
 export function createContact(contact) {
   return contactsCollection.create(contact);
 }
 
-export function deleteContact(contactId) {
-  return contactsCollection.findByIdAndDelete(contactId);
+export function deleteContact(contactId, userId) {
+  return contactsCollection.findOneAndDelete({ _id: contactId, userId });
 }
 
-export function updateContact(contactId, contact) {
-  return contactsCollection.findByIdAndUpdate(contactId, contact, {
-    new: true,
-  });
+export function updateContact(contactId, contact, userId) {
+  return contactsCollection.findOneAndUpdate(
+    { _id: contactId, userId },
+    contact,
+    {
+      new: true,
+    },
+  );
 }
 
-export function changeContactEmail(contactId, contact) {
-  return contactsCollection.findByIdAndUpdate(contactId, contact, {
-    new: true,
-  });
+export function changeContactEmail(contactId, contact, userId) {
+  return contactsCollection.findOneAndUpdate(
+    { _id: contactId, userId },
+    contact,
+    {
+      new: true,
+    },
+  );
 }
