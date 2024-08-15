@@ -85,7 +85,10 @@ async function deleteContactController(req, res, next) {
 
   const deletedContact = await deleteContact(contactId, userId);
 
-  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+  if (
+    !deletedContact ||
+    deletedContact.userId.toString() !== req.user._id.toString()
+  ) {
     return next(createHttpError(404, 'Contact not found'));
   }
 
@@ -106,11 +109,14 @@ async function updateContactController(req, res, next) {
     email: req.body.email,
   };
 
-  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+  const updatedContact = await updateContact(contactId, contact, userId);
+
+  if (
+    !updatedContact ||
+    updatedContact.userId.toString() !== req.user._id.toString()
+  ) {
     return next(createHttpError(404, 'Contact not found'));
   }
-
-  const updatedContact = await updateContact(contactId, contact, userId);
 
   res
     .status(200)
@@ -128,7 +134,10 @@ async function changeEmailController(req, res, next) {
 
   const changedContact = await changeContactEmail(contactId, contact, userId);
 
-  if (!contact || contact.userId.toString() !== req.user._id.toString()) {
+  if (
+    !changedContact ||
+    changedContact.userId.toString() !== req.user._id.toString()
+  ) {
     return next(createHttpError(404, 'Contact not found'));
   }
 
