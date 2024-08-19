@@ -1,3 +1,6 @@
+import * as fs from 'node:fs/promises';
+import path from 'node:path';
+
 import {
   getAllContacts,
   getContactById,
@@ -11,9 +14,9 @@ import { contactSchema } from '../validations/contacts.js';
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { uploadToCloudinary } from '../utils/uploadToCloudinary.js';
 
 async function getAllContactsController(req, res, next) {
-  console.log(req.user);
   const { page, perPage } = parsePaginationParams(req.query);
   const { sortBy, sortOrder } = parseSortParams(req.query);
   const filter = { ...parseFilterParams(req.query), userId: req.user._id };
@@ -55,16 +58,30 @@ async function getContactByIdController(req, res, next) {
 }
 
 async function createContactController(req, res, next) {
+  const filename = req.file.filename;
+
+  let photosUrl = filename;
+
+  if (process.env.ENABLE_CLOUDINARY === 'true') {
+    const response = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path);
+    photosUrl = response.secure_url;
+  } else {
+    await fs.rename(
+      req.file.path,
+      path.resolve('src', 'uploads', 'photos', filename),
+    );
+  }
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
     userId: req.user._id,
+    photo: photosUrl,
   };
 
   const { error, value } = contactSchema.validate(contact);
-
-  console.log(error);
 
   if (error !== undefined) {
     return next(createHttpError(400, error.details[0].message));
@@ -124,13 +141,30 @@ async function updateContactController(req, res, next) {
 }
 
 async function changeEmailController(req, res, next) {
+  const filename = req.file.filename;
   const contactId = req.params.contactId;
+
+  const userId = req.user._id;
+
+  let photosUrl = filename;
+
+  if (process.env.ENABLE_CLOUDINARY === 'true') {
+    const response = await uploadToCloudinary(req.file.path);
+    await fs.unlink(req.file.path);
+    photosUrl = response.secure_url;
+  } else {
+    await fs.rename(
+      req.file.path,
+      path.resolve('src', 'uploads', 'photos', filename),
+    );
+  }
+
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
     email: req.body.email,
+    photo: photosUrl,
   };
-  const userId = req.user._id;
 
   const changedContact = await changeContactEmail(contactId, contact, userId);
 
