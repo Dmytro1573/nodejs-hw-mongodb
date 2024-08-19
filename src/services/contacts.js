@@ -55,7 +55,7 @@ export function updateContact(contactId, contact, userId) {
   );
 }
 
-export function changeContactEmail(contactId, contact, userId) {
+export function changeContactEmail(contactId, contact, userId, filename) {
   return contactsCollection.findOneAndUpdate(
     { _id: contactId, userId },
     contact,

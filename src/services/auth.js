@@ -1,11 +1,24 @@
 import crypto from 'node:crypto';
 
+import path from 'node:path';
+import * as fs from 'node:fs/promises';
+
 import bcrypt from 'bcrypt';
 import createHttpError from 'http-errors';
+import jwt from 'jsonwebtoken';
+
+import { sendMail } from '../utils/sendMail.js';
+
+import handlebars from 'handlebars';
 
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
-import { ACCESS_TOKEN_TTL, REFRESH_TOKEN_TTL } from '../constants/index.js';
+import {
+  ACCESS_TOKEN_TTL,
+  REFRESH_TOKEN_TTL,
+  SMTP,
+  TEMPLATE_DIR,
+} from '../constants/index.js';
 
 export async function registerUser(user) {
   const maybeUser = await User.findOne({ email: user.email });
@@ -67,4 +80,70 @@ export async function refreshUser(sessionId, refreshToken) {
     accessTokenValidUntil: new Date(Date.now() + ACCESS_TOKEN_TTL),
     refreshTokenValidUntil: new Date(Date.now() + REFRESH_TOKEN_TTL),
   });
+}
+
+export async function resetEmail(email) {
+  const user = await User.findOne({ email });
+
+  if (user === null) {
+    throw createHttpError(404, 'User not found');
+  }
+
+  const resetToken = jwt.sign(
+    {
+      sub: user._id,
+      email: user.email,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: '15m',
+    },
+  );
+
+  const templateFile = path.join(TEMPLATE_DIR, 'reset-password-email.html');
+
+  const templateSource = await fs.readFile(templateFile, { encoding: 'utf-8' });
+
+  const template = handlebars.compile(templateSource);
+
+  const html = template({
+    name: user.name,
+    link: `https://google.com/reset-password?token=${resetToken}`,
+  });
+
+  await sendMail({
+    from: SMTP.FROM_EMAIL,
+    to: email,
+    subject: 'Reset your password',
+    html,
+  });
+}
+
+export async function resetPassword(password, token) {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const user = await User.findOne({ _id: decoded.sub, email: decoded.email });
+
+    if (user === null) {
+      throw createHttpError(404, 'User not found');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await User.findByIdAndUpdate(
+      user._id,
+      { password: hashedPassword },
+      { new: true },
+    );
+  } catch (error) {
+    if (
+      error.name === 'TokenExpiredError' ||
+      error.name === 'JsonWebTokenError'
+    ) {
+      throw createHttpError(401, 'Token is expired');
+    }
+
+    throw error;
+  }
 }
