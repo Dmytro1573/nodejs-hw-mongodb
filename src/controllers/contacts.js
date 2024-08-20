@@ -58,21 +58,21 @@ async function getContactByIdController(req, res, next) {
 }
 
 async function createContactController(req, res, next) {
-  const filename = req.file.filename;
+  let photosUrl;
 
-  let photosUrl = filename;
-
-  if (process.env.ENABLE_CLOUDINARY === 'true') {
-    const response = await uploadToCloudinary(req.file.path);
-    await fs.unlink(req.file.path);
-    photosUrl = response.secure_url;
-  } else {
-    await fs.rename(
-      req.file.path,
-      path.resolve('src', 'uploads', 'photos', filename),
-    );
+  if (req.file) {
+    const filename = req.file.filename;
+    if (process.env.ENABLE_CLOUDINARY === 'true') {
+      const response = await uploadToCloudinary(req.file.path);
+      await fs.unlink(req.file.path);
+      photosUrl = response.secure_url;
+    } else {
+      await fs.rename(
+        req.file.path,
+        path.resolve('src', 'uploads', 'photos', filename),
+      );
+    }
   }
-
   const contact = {
     name: req.body.name,
     phoneNumber: req.body.phoneNumber,
@@ -141,22 +141,24 @@ async function updateContactController(req, res, next) {
 }
 
 async function changeEmailController(req, res, next) {
-  const filename = req.file.filename;
   const contactId = req.params.contactId;
 
   const userId = req.user._id;
 
-  let photosUrl = filename;
+  let photosUrl;
 
-  if (process.env.ENABLE_CLOUDINARY === 'true') {
-    const response = await uploadToCloudinary(req.file.path);
-    await fs.unlink(req.file.path);
-    photosUrl = response.secure_url;
-  } else {
-    await fs.rename(
-      req.file.path,
-      path.resolve('src', 'uploads', 'photos', filename),
-    );
+  if (req.file) {
+    const filename = req.file.filename;
+    if (process.env.ENABLE_CLOUDINARY === 'true') {
+      const response = await uploadToCloudinary(req.file.path);
+      await fs.unlink(req.file.path);
+      photosUrl = response.secure_url;
+    } else {
+      await fs.rename(
+        req.file.path,
+        path.resolve('src', 'uploads', 'photos', filename),
+      );
+    }
   }
 
   const contact = {

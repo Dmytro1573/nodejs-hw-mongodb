@@ -13,3 +13,17 @@ export const contactSchema = Joi.object({
   userId: Joi.optional(),
   photo: Joi.optional(),
 });
+
+export const patchContactSchema = Joi.object({
+  name: Joi.string().min(3).max(20).optional().messages({
+    'string.base': 'Name should be a string',
+    'string.min': 'Name should be at least {#limit}',
+    'string.max': 'Name should beat at most {#limit}',
+  }),
+  phoneNumber: Joi.string().min(3).max(20).optional(),
+  email: Joi.string().min(3).max(20).email().optional(),
+  isFavourite: Joi.boolean(),
+  contactType: Joi.string().valid('work', 'home', 'personal'),
+  userId: Joi.optional(),
+  photo: Joi.optional(),
+});
