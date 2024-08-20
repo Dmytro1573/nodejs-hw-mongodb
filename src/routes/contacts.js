@@ -8,7 +8,7 @@ import {
   changeEmailController,
 } from '../controllers/contacts.js';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import { contactSchema } from '../validations/contacts.js';
+import { contactSchema, patchContactSchema } from '../validations/contacts.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { isValidID } from '../middlewares/isValidID.js';
 import { auth } from '../middlewares/authenticate.js';
@@ -56,7 +56,7 @@ router.patch(
   isValidID,
   upload.single('photo'),
   jsonParser,
-  validateBody(contactSchema),
+  validateBody(patchContactSchema),
   ctrlWrapper(changeEmailController),
 );
 

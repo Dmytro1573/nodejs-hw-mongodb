@@ -1,3 +1,5 @@
+import createHttpError from 'http-errors';
+import { Session } from '../models/session.js';
 import {
   registerUser,
   loginUser,
@@ -26,6 +28,13 @@ export async function register(req, res, next) {
 export async function login(req, res, next) {
   const { email, password } = req.body;
 
+  if (req.cookies.sessionId) {
+    const existingSession = await Session.findById(req.cookies.sessionId);
+
+    if (existingSession) {
+      return next(createHttpError(409, 'You are already logged in.'));
+    }
+  }
   const session = await loginUser(email, password);
 
   res.cookie('refreshToken', session.refreshToken, {
