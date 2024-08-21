@@ -28,6 +28,7 @@ export async function register(req, res, next) {
 export async function login(req, res, next) {
   const { email, password } = req.body;
 
+  // Here my code
   if (req.cookies.sessionId) {
     const existingSession = await Session.findById(req.cookies.sessionId);
 
