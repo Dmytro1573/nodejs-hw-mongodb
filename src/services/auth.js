@@ -47,6 +47,8 @@ export async function loginUser(email, password) {
   const accessToken = crypto.randomBytes(30).toString('base64');
   const refreshToken = crypto.randomBytes(30).toString('base64');
 
+  await Session.deleteOne({ userId: maybeUser._id });
+
   return Session.create({
     userId: maybeUser._id,
     accessToken,
