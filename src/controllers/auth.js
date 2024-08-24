@@ -1,5 +1,4 @@
-import createHttpError from 'http-errors';
-import { Session } from '../models/session.js';
+import { generateAuthUrl } from '../utils/googleOAuth2.js';
 import {
   registerUser,
   loginUser,
@@ -7,6 +6,7 @@ import {
   refreshUser,
   resetEmail,
   resetPassword,
+  loginOrRegisterWithGoogle,
 } from '../services/auth.js';
 
 export async function register(req, res, next) {
@@ -101,4 +101,38 @@ export async function resetPasswordController(req, res, next) {
   await resetPassword(password, token);
 
   res.send({ status: 200, message: 'Password reset successfully', data: {} });
+}
+
+export async function getOauthUrlController(req, res, next) {
+  const url = generateAuthUrl();
+
+  res.send({
+    status: 200,
+    message: 'Successfully get OAuth URL',
+    data: { url },
+  });
+}
+
+export async function loginWithGoogleController(req, res, next) {
+  const { code } = req.body;
+
+  const session = await loginOrRegisterWithGoogle(code);
+
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUntil,
+  });
+
+  res.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expires: session.refreshTokenValidUntil,
+  });
+
+  res.send({
+    status: 200,
+    message: 'Successfully logged in an user!',
+    data: {
+      accessToken: session.accessToken,
+    },
+  });
 }

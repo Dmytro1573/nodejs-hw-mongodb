@@ -23,3 +23,5 @@ export const CLOUDINARY = {
 };
 
 export const TEMPLATE_DIR = path.resolve('src', 'templates');
+
+export const SWAGGER_PATH = path.resolve('docs', 'swagger.json');
