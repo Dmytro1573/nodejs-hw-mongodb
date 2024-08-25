@@ -2,7 +2,7 @@ tags:
   - Contacts
 summary: Update a contact
 operationId: updateContact
-description: 'Update contact by id'
+description: 'Update a contact'
 security:
   - bearerAuth: []
 parameters:
@@ -12,9 +12,40 @@ parameters:
     schema:
       type: string
       example: 66c4b8bd4719066469ce2d02
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            description: "Contacts's name"
+            type: string
+            example: 'John Doe'
+          phoneNumber:
+            description: "Contacts's phoneNumber"
+            type: string
+            example: '+3805585596'
+          email:
+            description: "Contacts's email"
+            type: string
+            example: 'dmytro@gmail.com'
+          isFavourite:
+            description: 'Contact is favourite or not'
+            type: boolean
+            example: false
+          contactType:
+            description: "Contact's type"
+            type: string
+            enum: ['personal', 'home', 'work']
+            example: 'work'
+          photo:
+            description: "Contact's photo"
+            type: string
+            example: 'https://res.cloudinary.com/dsuuqokql/image/upload/v1724189565/juswageq…'
 responses:
-  '200':
-    description: 'Update contact by id'
+  '201':
+    description: Update a contact
     content:
       application/json:
         schema:
@@ -26,10 +57,10 @@ responses:
           properties:
             status:
               type: integer
-              example: 200
+              example: 201
             message:
               type: string
-              example: 'Contact is updated'
+              example: Successfully updated a contact!
             data:
               type: object
               $ref: ..\..\..\components\schemas\contact.yaml
