@@ -11,10 +11,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000"
-    },
-    {
-      "url": "https://example.com/api/v1"
+      "url": "https://nodejs-hw-mongodb-21-32lt.onrender.com"
     }
   ],
   "tags": [
@@ -168,11 +165,6 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "required": [
-                  "name",
-                  "phoneNumber",
-                  "email"
-                ],
                 "properties": {
                   "name": {
                     "description": "Contacts's name",
@@ -188,6 +180,26 @@
                     "description": "Contacts's email",
                     "type": "string",
                     "example": "dmytro@gmail.com"
+                  },
+                  "isFavourite": {
+                    "description": "Contact is favourite or not",
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "contactType": {
+                    "description": "Contact's type",
+                    "type": "string",
+                    "enum": [
+                      "personal",
+                      "home",
+                      "work"
+                    ],
+                    "example": "work"
+                  },
+                  "photo": {
+                    "description": "Contact's photo",
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/dsuuqokql/image/upload/v1724189565/juswageq…"
                   }
                 }
               }
@@ -268,6 +280,26 @@
                     "description": "Contacts's email",
                     "type": "string",
                     "example": "dmytro@gmail.com"
+                  },
+                  "isFavourite": {
+                    "description": "Contact is favourite or not",
+                    "type": "boolean",
+                    "example": false
+                  },
+                  "contactType": {
+                    "description": "Contact's type",
+                    "type": "string",
+                    "enum": [
+                      "personal",
+                      "home",
+                      "work"
+                    ],
+                    "example": "work"
+                  },
+                  "photo": {
+                    "description": "Contact's photo",
+                    "type": "string",
+                    "example": "https://res.cloudinary.com/dsuuqokql/image/upload/v1724189565/juswageq…"
                   }
                 }
               }
