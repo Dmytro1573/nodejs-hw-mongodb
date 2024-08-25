@@ -4,7 +4,7 @@ summary: Delete a contact
 operationId: delateContact
 description: 'Delete a contact'
 security:
-  - bearerAuth: []#
+  - bearerAuth: []
 parameters:
   - in: path
     name: id
@@ -31,5 +31,3 @@ responses:
               example: Successfully deleted contact with id 66c4b8bd4719066469ce2d02
   '404':
     $ref: ..\..\..\components\responses\404.yaml
-
-

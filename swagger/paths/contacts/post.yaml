@@ -7,7 +7,7 @@ security:
   - bearerAuth: []
 requestBody:
   content:
-    application/json:
+    multipart/form-data:
       schema:
         type: object
         required:
@@ -27,6 +27,19 @@ requestBody:
             description: "Contacts's email"
             type: string
             example: 'dmytro@gmail.com'
+          isFavourite:
+            description: 'Contact is favourite or not'
+            type: boolean
+            example: false
+          contactType:
+            description: "Contact's type"
+            type: string
+            enum: ['personal', 'home', 'work']
+            example: 'work'
+          photo:
+            description: "Contact's photo"
+            type: string
+            example: 'https://res.cloudinary.com/dsuuqokql/image/upload/v1724189565/juswageq…'
 responses:
   '201':
     description: Creates a contact
