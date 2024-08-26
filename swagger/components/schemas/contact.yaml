@@ -42,3 +42,13 @@ properties:
     type: string
     example: 'https://res.cloudinary.com/dsuuqokql/image/upload/v1724189565/juswageq…'
     default: null
+  createdAt:
+    description: 'Time when the contact was added'
+    type: string
+    format: date-time
+    example: '2023-08-02T10:20:30Z'
+  updatedAt:
+    description: 'Time when the contact was last updated'
+    type: string
+    format: date-time
+    example: '2023-08-02T10:20:30Z'
